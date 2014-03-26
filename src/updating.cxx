@@ -6,18 +6,15 @@
 
 using namespace Updating;
 
-//Sets division by zero to zero rather than naan
+double epsilon = 1e-16;
+
+//Dampens division by zero
 void CleanElementDiv(TMatrixD& A, TMatrixD&B) {
     const unsigned int m = A.GetNrows();
     const unsigned int n = A.GetNcols();
     for(unsigned int i = 0; i < m; i++) {
         for(unsigned int j = 0; j < n; j++) {
-            if(B[i][j] == 0) {
-                A[i][j] = 0;
-            }
-            else {
-                A[i][j] /= B[i][j];
-            }
+            A[i][j] /= B[i][j] + epsilon;
         }
     }
 }
@@ -97,12 +94,7 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations) {
                 for(unsigned int mu = 0; mu < m; mu++) {
                     sum += oldU[mu][i];
                 }
-                if(sum == 0) {
-                    V[i][j] = 0; 
-                }
-                else {
-                    V[i][j] /= sum;
-                }
+                V[i][j] /= sum + epsilon;
             }
         }
     }
