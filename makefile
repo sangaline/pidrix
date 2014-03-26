@@ -39,7 +39,7 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 #------------------------------------------------------------------------------
 
 CLASSES			= Pidrix
-FNCS        	= initialization plotting
+FNCS        	= initialization plotting updating
 
 #------------------------------------------------------------------------------
 
