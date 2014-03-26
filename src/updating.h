@@ -4,6 +4,7 @@
 class Pidrix;
 
 namespace Updating {
+    void MultiplicativeEuclidian(Pidrix *P, const unsigned int iterations = 1);
 
 
 };

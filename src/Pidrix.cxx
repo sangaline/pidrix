@@ -83,9 +83,14 @@ double Pidrix::SetV(unsigned i, unsigned j, double value) {
 double Pidrix::GetU(unsigned i, unsigned j) {
     return (*U)[i][j];
 }
-
 double Pidrix::GetV(unsigned i, unsigned j) {
     return (*V)[i][j];
+}
+void Pidrix::SetU(const TMatrixD& newU) { 
+    (*U) = newU; 
+}
+void Pidrix::SetV(const TMatrixD& newV) { 
+    (*V) = newV;
 }
 
 const TVectorD& Pidrix::SVDSigma() {

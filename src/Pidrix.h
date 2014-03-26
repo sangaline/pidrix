@@ -46,6 +46,9 @@ class Pidrix : public TNamed {
     double GetV(unsigned i, unsigned j);
     const TMatrixD& GetU() { return (*U); }
     const TMatrixD& GetV() { return (*V); }
+    const TMatrixD& GetT() { return (*T); }
+    void SetU(const TMatrixD& newU);
+    void SetV(const TMatrixD& newV);
 
     double RandomUniform(double min, double max);
 
