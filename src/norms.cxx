@@ -33,3 +33,55 @@ double Norms::Euclidian(const TH1* A, const TH1* B) {
     }
     return sqrt( sum2/double(xbins*ybins) );
 }
+
+
+double Norms::KullbackLeibler(Pidrix *P) {
+    const TMatrixD A = P->GetU()*P->GetV();
+    return KullbackLeibler(&P->GetT(), &A);
+}
+
+double Norms::KullbackLeibler(const TMatrixD* A, const TMatrixD* B) {
+    const unsigned int m = A->GetNrows();
+    const unsigned int n = A->GetNcols();
+    double sum = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        for(unsigned int j = 0; j < n; j++) {
+            const double a = (*A)[i][j];
+            const double b = (*B)[i][j];
+            if(b > 0 && a > 0) {
+                sum += a*log(a/b);
+            }
+            sum += - a + b;
+        }
+    }
+    return sum;
+}
+
+double Norms::KullbackLeibler(const TVectorD* A, const TVectorD* B) {
+    const unsigned int m = A->GetNoElements();
+    double sum = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        const double a = (*A)[i];
+        const double b = (*B)[i];
+        if(b > 0) {
+            sum += a*log(a/b) - a + b;
+        }
+    }
+    return sum;
+}
+
+double Norms::KullbackLeibler(const TH1* A, const TH1* B) {
+    const unsigned int xbins = A->GetNbinsX();
+    const unsigned int ybins = A->GetNbinsY();
+    double sum = 0;
+    for(unsigned int i = 1; i <= xbins; i++) {
+        for(unsigned int j = 1; j <= ybins; j++) {
+            const double a = A->GetBinContent(i,j);
+            const double b = B->GetBinContent(i,j);
+            if(b > 0) {
+                sum += a*log(a/b) - a + b;
+            }
+        }
+    }
+    return sum;
+}

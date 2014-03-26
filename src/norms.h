@@ -12,6 +12,11 @@ namespace Norms {
     double Euclidian(const TVectorD* A, const TVectorD* B);
     double Euclidian(const TH1* A, const TH1* B);
 
+    //note that these are only truly KBD when both A and B are normalized
+    double KullbackLeibler(Pidrix *P);
+    double KullbackLeibler(const TMatrixD* A, const TMatrixD* B);
+    double KullbackLeibler(const TVectorD* A, const TVectorD* B);
+    double KullbackLeibler(const TH1* A, const TH1* B);
 };
 
 #endif
