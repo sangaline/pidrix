@@ -22,6 +22,8 @@ namespace Norms {
     double SymmetrizedKullbackLeibler(const TMatrixD* A, const TMatrixD* B);
     double SymmetrizedKullbackLeibler(const TVectorD* A, const TVectorD* B);
     double SymmetrizedKullbackLeibler(const TH1* A, const TH1* B);
+
+    double ChiSquared(Pidrix *P, bool per_ndf = true);
 };
 
 #endif

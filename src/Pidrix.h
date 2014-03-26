@@ -12,7 +12,7 @@ class TGraph;
 class TRandom;
 
 class Pidrix : public TNamed {
-    TMatrixD *T, *Terr; // T for target
+    TMatrixD *T, *E; // T for target, E for Error
     double integral, xlow, xhigh, ylow, yhigh;
     TMatrixD *U, *V; // UV ~= T
     unsigned int maxm, maxn;
@@ -47,6 +47,7 @@ class Pidrix : public TNamed {
     const TMatrixD& GetU() { return (*U); }
     const TMatrixD& GetV() { return (*V); }
     const TMatrixD& GetT() { return (*T); }
+    const TMatrixD& GetE() { return (*E); }
     void SetU(const TMatrixD& newU);
     void SetV(const TMatrixD& newV);
 

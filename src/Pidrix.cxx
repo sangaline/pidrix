@@ -14,7 +14,7 @@ Pidrix::Pidrix() {
     T = new TMatrixD();
     U = new TMatrixD();
     V = new TMatrixD();
-    Terr = new TMatrixD();
+    E = new TMatrixD();
     SVD = new TDecompSVD();
     rand = new TRandom3(0);
     maxm = 0;
@@ -31,7 +31,7 @@ Pidrix::~Pidrix() {
     delete T;
     delete U;
     delete V;
-    delete Terr;
+    delete E;
     delete SVD;
     delete rand;
 }
@@ -41,13 +41,13 @@ void Pidrix::SetTarget(TH2 *target) {
     maxn = target->GetNbinsX();
 
     T->ResizeTo(maxm, maxn);
-    Terr->ResizeTo(maxm, maxn);
+    E->ResizeTo(maxm, maxn);
 
     integral = 0;
     for(int i = 0; i < maxm; i++) {
         for(int j = 0; j < maxn; j++) {
             (*T)[i][j] = target->GetBinContent(i+1, j+1);
-            (*Terr)[i][j] = target->GetBinError(i+1, j+1);
+            (*E)[i][j] = target->GetBinError(i+1, j+1);
             integral += (*T)[i][j];
         }
     }

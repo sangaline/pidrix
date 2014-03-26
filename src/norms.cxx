@@ -103,3 +103,28 @@ double Norms::SymmetrizedKullbackLeibler(const TH1* A, const TH1* B) {
     return 0.5*(KullbackLeibler(A, B) + KullbackLeibler(B, A));
 }
 
+double Norms::ChiSquared(Pidrix *P, bool per_ndf) {
+    const TMatrixD& T = P->GetT();
+    const TMatrixD& E = P->GetE();
+    const TMatrixD& A = P->GetU()*P->GetV();
+    const unsigned int m = A.GetNrows();
+    const unsigned int n = A.GetNcols();
+    double sum = 0, ndf = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        for(unsigned int j = 0; j < n; j++) {
+            const double t = T[i][j];
+            const double e = E[i][j];
+            const double a = A[i][j];
+            if(t > 0 && e > 0) {
+                sum += pow((t-a)/e, 2);
+                ndf += 1;
+            }
+        }
+    }
+    if(per_ndf) {
+        return sum/ndf;
+    }
+    else {
+        return sum;
+    }
+}
