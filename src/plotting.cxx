@@ -18,7 +18,7 @@ TGraph* Plotting::SVGraph(Pidrix *P, TGraph *t) {
         t->Set(0);
     }
 
-    const TVectorD S = P->SVDSigma();
+    const TVectorD& S = P->SVDSigma();
     const int Slen = S.GetNoElements();
 
     for(int i = 0; i < Slen; i++) {
