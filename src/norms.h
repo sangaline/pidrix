@@ -17,6 +17,11 @@ namespace Norms {
     double KullbackLeibler(const TMatrixD* A, const TMatrixD* B);
     double KullbackLeibler(const TVectorD* A, const TVectorD* B);
     double KullbackLeibler(const TH1* A, const TH1* B);
+
+    double SymmetrizedKullbackLeibler(Pidrix *P);
+    double SymmetrizedKullbackLeibler(const TMatrixD* A, const TMatrixD* B);
+    double SymmetrizedKullbackLeibler(const TVectorD* A, const TVectorD* B);
+    double SymmetrizedKullbackLeibler(const TH1* A, const TH1* B);
 };
 
 #endif

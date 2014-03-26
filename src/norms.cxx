@@ -85,3 +85,21 @@ double Norms::KullbackLeibler(const TH1* A, const TH1* B) {
     }
     return sum;
 }
+
+double Norms::SymmetrizedKullbackLeibler(Pidrix *P) {
+    const TMatrixD A = P->GetU()*P->GetV();
+    return SymmetrizedKullbackLeibler(&P->GetT(), &A);
+}
+
+double Norms::SymmetrizedKullbackLeibler(const TMatrixD* A, const TMatrixD* B) {
+    return 0.5*(KullbackLeibler(A, B) + KullbackLeibler(B, A));
+}
+
+double Norms::SymmetrizedKullbackLeibler(const TVectorD* A, const TVectorD* B) {
+    return 0.5*(KullbackLeibler(A, B) + KullbackLeibler(B, A));
+}
+
+double Norms::SymmetrizedKullbackLeibler(const TH1* A, const TH1* B) {
+    return 0.5*(KullbackLeibler(A, B) + KullbackLeibler(B, A));
+}
+
