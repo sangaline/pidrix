@@ -1,0 +1,10 @@
+#binary files
+*.root
+*.so
+*.o
+*.pdf
+*.gif
+*.png
+
+#vim files
+*.swp
