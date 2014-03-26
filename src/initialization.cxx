@@ -16,7 +16,7 @@ using namespace Initialization;
 //Vector initializations
 //======================
 
-double Initialization::UniformRandomVectors(Pidrix *P) {
+double Initialization::UniformRandomVectors(Pidrix *P, bool randomize_scale) {
     //if each vector sums to this then our integral should match
     const double vector_sum = sqrt(P->Integral()/double(P->Rank()));
     const double Uvector_max_entry = 2.0*vector_sum/double(P->Rows());
@@ -24,14 +24,15 @@ double Initialization::UniformRandomVectors(Pidrix *P) {
 
     double integral = 0;
     for(unsigned int vector = 0; vector < P->Rank(); vector++) {
+        double vector_scale = randomize_scale?P->RandomUniform(0, 2):1;
 
         double Usum = 0, Vsum = 0;
         for(unsigned int i = 0; i < P->Rows(); i++) {
-            P->SetU(i, vector, P->RandomUniform(0, Uvector_max_entry));
+            P->SetU(i, vector, vector_scale*P->RandomUniform(0, Uvector_max_entry));
             Usum += P->GetU(i, vector);
         }
         for(unsigned int j = 0; j < P->Columns(); j++) {
-            P->SetV(vector, j, P->RandomUniform(0, Vvector_max_entry));
+            P->SetV(vector, j, vector_scale*P->RandomUniform(0, Vvector_max_entry));
             Vsum += P->GetV(vector, j);
         }
 
