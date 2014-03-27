@@ -122,7 +122,7 @@ TH1D* Plotting::DistributionY(const Pidrix* P, unsigned int vector, TH1D* h) {
     for(unsigned int j = 0; j < n; j++) {
         V_contribution += V[vector][j];
     }
-    for(unsigned int i = 0; i < n; i++) {
+    for(unsigned int i = 0; i < m; i++) {
         h->SetBinContent(i+1, U[i][vector]*V_contribution);
     }
 
