@@ -8,7 +8,7 @@
 #include "TAxis.h"
 #include "TRandom3.h"
 
-ClassImp(Pidrix);
+ClassImp(Pidrix)
 
 Pidrix::Pidrix() {
     T = new TMatrixD();
