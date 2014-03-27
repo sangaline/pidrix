@@ -38,7 +38,7 @@ GLIBS         = $(ROOTGLIBS) $(SYSLIBS)
 
 #------------------------------------------------------------------------------
 
-CLASSES			= Pidrix
+CLASSES			= Pidrix Pidrixter
 FNCS        	= initialization plotting updating norms
 
 #------------------------------------------------------------------------------
