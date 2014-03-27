@@ -247,3 +247,48 @@ void Updating::Scale(Pidrix *P, double factor) {
     ScaleX(P, factor);
     ScaleY(P, factor);
 }
+
+void Updating::AddNoiseX(Pidrix *P, double fraction) {
+    const TMatrixD& oldV = P->GetV();
+    TMatrixD V = oldV;
+
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    for(int vector = 0; vector < rank; vector++) {
+        double Vsum = 0;
+        for(unsigned int j = 0; j < n; j++) {
+            Vsum += oldV[vector][j];
+        }
+        double max_noise = Vsum*fraction*2.0/double(n);
+        for(unsigned int j = 0; j < n; j++) {
+            V[vector][j] += P->RandomUniform(0, max_noise);
+        }
+    }
+    P->SetV(V);
+}
+
+void Updating::AddNoiseY(Pidrix *P, double fraction) {
+    const TMatrixD& oldU = P->GetU();
+    TMatrixD U = oldU;
+
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    for(int vector = 0; vector < rank; vector++) {
+        double Usum = 0;
+        for(unsigned int i = 0; i < m; i++) {
+            Usum += oldU[i][vector];
+        }
+        double max_noise = Usum*fraction*2.0/double(m);
+        for(unsigned int i = 0; i < m; i++) {
+            U[i][vector] += P->RandomUniform(0, max_noise);
+        }
+    }
+    P->SetU(U);
+}
+
+void Updating::AddNoise(Pidrix *P, double fraction) {
+    AddNoiseX(P, fraction);
+    AddNoiseY(P, fraction);
+}

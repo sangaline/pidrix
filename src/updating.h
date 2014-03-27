@@ -11,6 +11,9 @@ namespace Updating {
     void ScaleX(Pidrix *P, double factor);
     void ScaleY(Pidrix *P, double factor);
     void Scale(Pidrix *P, double factor);
+    void AddNoiseX(Pidrix *P, double fraction = 0.01);
+    void AddNoiseY(Pidrix *P, double fraction = 0.01);
+    void AddNoise(Pidrix *P, double fraction = 0.01);
 };
 
 #endif
