@@ -30,18 +30,18 @@ void Updating::MultiplicativeEuclidian(Pidrix *P, const unsigned int iterations)
     const unsigned int rank = P->Rank();
 
     for(unsigned int iteration = 0; iteration < iterations; iteration++) {
-        //element-wise: new U = U*A1/B1
-        //element-wise: new V = V*A2/B2
-        TMatrixD A1(T, TMatrixD::kMultTranspose,V);
-        TMatrixD B1(U,TMatrixD::kMult,TMatrixD(V,TMatrixD::kMultTranspose,V));
-        TMatrixD A2(U, TMatrixD::kTransposeMult,T);
-        TMatrixD B2(TMatrixD(U,TMatrixD::kTransposeMult,U),TMatrixD::kMult,V);
+        //element-wise: new U = U*A/B
+        TMatrixD A(T, TMatrixD::kMultTranspose,V);
+        TMatrixD B(U,TMatrixD::kMult,TMatrixD(V,TMatrixD::kMultTranspose,V));
 
-        CleanElementDiv(A1, B1);
-        ElementMult(U, A1);
+        CleanElementDiv(A, B);
+        ElementMult(U, A);
 
-        CleanElementDiv(A2, B2);
-        ElementMult(V, A2);
+        //element-wise: new V = V*C/D
+        TMatrixD C(U, TMatrixD::kTransposeMult,T);
+        TMatrixD D(TMatrixD(U,TMatrixD::kTransposeMult,U),TMatrixD::kMult,V);
+        CleanElementDiv(C, D);
+        ElementMult(V, C);
     }
     P->SetU(U);
     P->SetV(V);
@@ -57,7 +57,6 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations) {
 
     for(unsigned int iteration = 0; iteration < iterations; iteration++) {
         TMatrixD A(U, TMatrixD::kMult,V);
-        TMatrixD oldU(U);
 
         //U-Update
         for(unsigned int i = 0; i < m; i++) {
@@ -82,19 +81,20 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations) {
             }
         }
 
+        A = U*V;
         //V-Update
         for(unsigned int i = 0; i < rank; i++) {
             for(unsigned int j = 0; j < n; j++) {
                 double sum = 0;
                 for(unsigned int mu = 0; mu < m; mu++) {
                     if( A[mu][j] == 0) { continue; } //avoid division by zero
-                    sum += oldU[mu][i]*T[mu][j]/A[mu][j];
+                    sum += U[mu][i]*T[mu][j]/A[mu][j];
                 }
                 V[i][j] *= sum;
 
                 sum = 0;
                 for(unsigned int mu = 0; mu < m; mu++) {
-                    sum += oldU[mu][i];
+                    sum += U[mu][i];
                 }
                 V[i][j] /= sum + epsilon;
             }
