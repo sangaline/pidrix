@@ -3,7 +3,8 @@
 #include "Pidrix.h"
 
 #include "TGraph.h"
-#include "TH2D.h"
+#include "TH1.h"
+#include "TH2.h"
 
 #include "TVectorD.h"
 #include "TMatrixD.h"
@@ -71,6 +72,58 @@ TH2D* Plotting::Target(const Pidrix* P, TH2D* h, const char* name) {
             h->SetBinContent(j+1, i+1, T[i][j]);
             h->SetBinError(j+1, i+1, T[i][j]);
         }
+    }
+
+    return h;
+}
+
+TH1D* Plotting::DistributionX(const Pidrix* P, unsigned int vector, TH1D* h) {
+    if(h == 0) {
+        h = new TH1D("", "Distribution X;x", 
+            P->Columns(), P->LowX(), P->HighX());
+    }
+    else {
+        h->Reset();
+    }
+
+    const TMatrixD& U = P->GetU();
+    const TMatrixD& V = P->GetV();
+
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+
+    double U_contribution = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        U_contribution += U[i][vector];
+    }
+    for(unsigned int j = 0; j < n; j++) {
+        h->SetBinContent(j+1, V[vector][j]*U_contribution);
+    }
+
+    return h;
+}
+
+TH1D* Plotting::DistributionY(const Pidrix* P, unsigned int vector, TH1D* h) {
+    if(h == 0) {
+        h = new TH1D("", "Distribution Y;y", 
+            P->Rows(), P->LowY(), P->HighY());
+    }
+    else {
+        h->Reset();
+    }
+
+    const TMatrixD& U = P->GetU();
+    const TMatrixD& V = P->GetV();
+
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+
+    double V_contribution = 0;
+    for(unsigned int j = 0; j < n; j++) {
+        V_contribution += V[vector][j];
+    }
+    for(unsigned int i = 0; i < n; i++) {
+        h->SetBinContent(i+1, U[i][vector]*V_contribution);
     }
 
     return h;
