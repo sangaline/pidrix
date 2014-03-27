@@ -6,9 +6,9 @@ class TGraph;
 class TH2D;
 
 namespace Plotting {
-    TGraph* SVGraph(Pidrix* P, TGraph *t = 0);
-    TH2D* Approximation(Pidrix* P, TH2D* h = 0, const char* name = "approximation");
-    TH2D* Target(Pidrix* P, TH2D* h = 0, const char* name = "target");
+    TGraph* SVGraph(const Pidrix* P, TGraph *t = 0);
+    TH2D* Approximation(const Pidrix* P, TH2D* h = 0, const char* name = "approximation");
+    TH2D* Target(const Pidrix* P, TH2D* h = 0, const char* name = "target");
 
 };
 

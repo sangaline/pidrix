@@ -36,7 +36,7 @@ Pidrix::~Pidrix() {
     delete SVD;
 }
 
-void Pidrix::SetTarget(Pidrix *P, bool randomize) {
+void Pidrix::SetTarget(const Pidrix *P, bool randomize) {
     TH2 *target = Plotting::Target(P,0,"");
     SetTarget(target, randomize);
     delete target;
@@ -107,7 +107,7 @@ void Pidrix::SetV(const TMatrixD& newV) {
     (*V) = newV;
 }
 
-const TVectorD& Pidrix::SVDSigma() {
+const TVectorD& Pidrix::SVDSigma() const {
     return SVD->GetSig();
 }
 

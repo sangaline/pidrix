@@ -10,7 +10,7 @@
 
 using namespace Plotting;
 
-TGraph* Plotting::SVGraph(Pidrix *P, TGraph *t) {
+TGraph* Plotting::SVGraph(const Pidrix *P, TGraph *t) {
     if(t == 0) {
         t = new TGraph();
     }
@@ -28,7 +28,7 @@ TGraph* Plotting::SVGraph(Pidrix *P, TGraph *t) {
     return t;
 }
 
-TH2D* Plotting::Approximation(Pidrix* P, TH2D* h, const char* name) {
+TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h, const char* name) {
     if(h == 0) {
         h = new TH2D(name, "Current Approximation;x;y", 
             P->Columns(), P->LowX(), P->HighX(),
@@ -52,7 +52,7 @@ TH2D* Plotting::Approximation(Pidrix* P, TH2D* h, const char* name) {
     return h;
 }
 
-TH2D* Plotting::Target(Pidrix* P, TH2D* h, const char* name) {
+TH2D* Plotting::Target(const Pidrix* P, TH2D* h, const char* name) {
     if(h == 0) {
         h = new TH2D(name, "Original Distribution;x;y", 
             P->Columns(), P->LowX(), P->HighX(),
