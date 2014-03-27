@@ -1,6 +1,7 @@
 #include "updating.h"
 
 #include "Pidrix.h"
+#include "quantifying.h"
 
 #include "TMatrixD.h"
 
@@ -134,4 +135,115 @@ void Updating::Normalize(Pidrix *P) {
 
     P->SetU(U);
     P->SetV(V);
+}
+
+void Updating::ScaleY(Pidrix *P, double factor) {
+    const TMatrixD& oldU = P->GetU();
+    TMatrixD U = oldU;
+
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    const double ylow = P->LowY();
+    const double yhigh = P->HighY();
+    const double ydelta = (yhigh - ylow)/double(P->Rows());
+
+    for(int vector = 0; vector < rank; vector++) {
+        double meany = Quantifying::MeanY(P, vector);
+        for(unsigned int i = 0; i < m; i++) {
+            //after transformation
+            double lowedge = ylow + double(i)*ydelta;
+            double highedge = lowedge + ydelta;
+            //before transformation
+            lowedge = meany + ((lowedge - meany)/factor);
+            highedge = meany + ((highedge - meany)/factor);
+            //which bins would they be in?
+            const int lowbin = floor((lowedge - ylow)/ydelta);
+            const int highbin = floor((highedge - ylow)/ydelta);
+            double value = 0;
+            if(lowbin == highbin) {
+                if(lowbin >= 0 && lowbin < m) {
+                    const double bin_fraction = (highedge-lowedge)/ydelta;
+                    value = bin_fraction*oldU[lowbin][vector];
+                }
+            }
+            else {
+                if(lowbin >= 0 && lowbin < m) {
+                    const double lowbin_highedge = ylow + double(lowbin+1)*ydelta;
+                    const double bin_fraction = (lowbin_highedge-lowedge)/ydelta;
+                    value += bin_fraction*oldU[lowbin][vector];
+                }
+                if(highbin >= 0 && highbin < m) {
+                    const double highbin_lowedge = ylow + double(highbin)*ydelta;
+                    const double bin_fraction = (highedge - highbin_lowedge)/ydelta;
+                    value += bin_fraction*oldU[highbin][vector];
+                }
+                for(int bin = lowbin+1; bin < highbin; bin++) {
+                    if(bin >= 0 && bin < m) {
+                        value += oldU[bin][vector];
+                    }
+                }
+            }
+            U[i][vector] = value;
+        }
+    }
+    P->SetU(U);
+}
+
+void Updating::ScaleX(Pidrix *P, double factor) {
+    const TMatrixD& oldV = P->GetV();
+    TMatrixD V = oldV;
+
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    const double xlow = P->LowX();
+    const double xhigh = P->HighX();
+    const double xdelta = (xhigh - xlow)/double(P->Columns());
+
+    for(int vector = 0; vector < rank; vector++) {
+        double meanx = Quantifying::MeanX(P, vector);
+        for(unsigned int j = 0; j < n; j++) {
+            //after transformation
+            double lowedge = xlow + double(j)*xdelta;
+            double highedge = lowedge + xdelta;
+            //before transformation
+            lowedge = meanx + ((lowedge - meanx)/factor);
+            highedge = meanx + ((highedge - meanx)/factor);
+            //which bins would they be in?
+            const int lowbin = floor((lowedge - xlow)/xdelta);
+            const int highbin = floor((highedge - xlow)/xdelta);
+            double value = 0;
+            if(lowbin == highbin) {
+                if(lowbin >= 0 && lowbin < n) {
+                    const double bin_fraction = (highedge-lowedge)/xdelta;
+                    value = bin_fraction*oldV[vector][lowbin];
+                }
+            }
+            else {
+                if(lowbin >= 0 && lowbin < n) {
+                    const double lowbin_highedge = xlow + double(lowbin+1)*xdelta;
+                    const double bin_fraction = (lowbin_highedge-lowedge)/xdelta;
+                    value += bin_fraction*oldV[vector][lowbin];
+                }
+                if(highbin >= 0 && highbin < n) {
+                    const double highbin_lowedge = xlow + double(highbin)*xdelta;
+                    const double bin_fraction = (highedge - highbin_lowedge)/xdelta;
+                    value += bin_fraction*oldV[vector][highbin];
+                }
+                for(int bin = lowbin+1; bin < highbin; bin++) {
+                    if(bin >= 0 && bin < n) {
+                        value += oldV[vector][bin];
+                    }
+                }
+            }
+            V[vector][j] = value;
+        }
+    }
+    P->SetV(V);
+}
+
+void Updating::Scale(Pidrix *P, double factor) {
+    ScaleX(P, factor);
+    ScaleY(P, factor);
 }
