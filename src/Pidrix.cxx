@@ -33,22 +33,28 @@ Pidrix::~Pidrix() {
     delete V;
     delete E;
     delete SVD;
-    delete rand;
 }
 
-void Pidrix::SetTarget(TH2 *target) {
+void Pidrix::SetTarget(TH2 *target, bool randomize) {
+    integral = target->Integral();
+    if(randomize) {
+        integral = int(integral);
+        TH2* new_target = (TH2*) target->Clone();
+        new_target->Reset();
+        new_target->FillRandom(target, int(integral));
+        target = new_target;
+    }
+
     maxm = target->GetNbinsY();
     maxn = target->GetNbinsX();
 
     T->ResizeTo(maxm, maxn);
     E->ResizeTo(maxm, maxn);
 
-    integral = 0;
     for(int i = 0; i < maxm; i++) {
         for(int j = 0; j < maxn; j++) {
             (*T)[i][j] = target->GetBinContent(i+1, j+1);
             (*E)[i][j] = target->GetBinError(i+1, j+1);
-            integral += (*T)[i][j];
         }
     }
     xlow = target->GetXaxis()->GetBinLowEdge(1);
@@ -64,6 +70,7 @@ void Pidrix::SetTarget(TH2 *target) {
 
     //Reset the rank
     rank = 0;
+    if(randomize) { delete target; }
 }
 
 unsigned int Pidrix::SetRank(unsigned int new_rank) { 
