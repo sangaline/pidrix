@@ -9,7 +9,6 @@ class TDecompSVD;
 
 class TH2;
 class TGraph;
-class TRandom;
 
 class Pidrix : public TNamed {
     TMatrixD *T, *E; // T for target, E for Error
@@ -20,7 +19,6 @@ class Pidrix : public TNamed {
 
     //Various things that helper functions will rely on
     TDecompSVD *SVD;
-    TRandom *rand;
 
   public:
     Pidrix();

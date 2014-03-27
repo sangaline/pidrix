@@ -16,7 +16,6 @@ Pidrix::Pidrix() {
     V = new TMatrixD();
     E = new TMatrixD();
     SVD = new TDecompSVD();
-    rand = new TRandom3(0);
     maxm = 0;
     maxn = 0;
     rank = 0;
@@ -105,6 +104,6 @@ const TVectorD& Pidrix::SVDSigma() {
 }
 
 double Pidrix::RandomUniform(double min, double max) {
-    return rand->Uniform(min, max);
+    return gRandom->Uniform(min, max);
 }
 
