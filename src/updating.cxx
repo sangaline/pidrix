@@ -8,10 +8,8 @@
 
 using namespace Updating;
 
-double epsilon = 1e-16;
-
 //Dampens division by zero
-void CleanElementDiv(TMatrixD& A, TMatrixD&B) {
+void CleanElementDiv(TMatrixD& A, TMatrixD&B, double epsilon = 1e-16) {
     const unsigned int m = A.GetNrows();
     const unsigned int n = A.GetNcols();
     for(unsigned int i = 0; i < m; i++) {
@@ -96,7 +94,7 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations) {
                 for(unsigned int mu = 0; mu < m; mu++) {
                     sum += U[mu][i];
                 }
-                V[i][j] /= sum + epsilon;
+                V[i][j] /= sum;
             }
         }
     }
