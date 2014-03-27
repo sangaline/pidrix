@@ -131,4 +131,7 @@ void Updating::Normalize(Pidrix *P) {
             V[vector][j] *= Vscale;
         }
     }
+
+    P->SetU(U);
+    P->SetV(V);
 }
