@@ -14,6 +14,9 @@ namespace Updating {
     void AddNoiseX(Pidrix *P, double fraction = 0.01);
     void AddNoiseY(Pidrix *P, double fraction = 0.01);
     void AddNoise(Pidrix *P, double fraction = 0.01);
+    void Smear(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
+    void SmearX(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
+    void SmearY(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
 };
 
 #endif

@@ -292,3 +292,54 @@ void Updating::AddNoise(Pidrix *P, double fraction) {
     AddNoiseX(P, fraction);
     AddNoiseY(P, fraction);
 }
+
+void Updating::SmearX(Pidrix *P, unsigned int iterations, double neighbor_fraction) {
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    for(unsigned int iteration = 0; iteration < iterations; iteration++) {
+        const TMatrixD& oldV = P->GetV();
+        TMatrixD V = oldV;
+
+        for(int vector = 0; vector < rank; vector++) {
+            //edge cases
+            V[vector][0] += neighbor_fraction*oldV[vector][1];
+            V[vector][0] /= 1.0 + neighbor_fraction;
+            V[vector][n-1] += neighbor_fraction*oldV[vector][n-2];
+            V[vector][n-1] /= 1.0 + neighbor_fraction;
+            for(unsigned int j = 1; j < n-1; j++) {
+                V[vector][j] += neighbor_fraction*(oldV[vector][j-1]+oldV[vector][j+1]);
+                V[vector][j] /= 1.0 + 2.0*neighbor_fraction;
+            }
+        }
+        P->SetV(V);
+    }
+}
+
+void Updating::SmearY(Pidrix *P, unsigned int iterations, double neighbor_fraction) {
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    for(unsigned int iteration = 0; iteration < iterations; iteration++) {
+        const TMatrixD& oldU = P->GetU();
+        TMatrixD U = oldU;
+
+        for(int vector = 0; vector < rank; vector++) {
+            //edge cases
+            U[0][vector] += neighbor_fraction*oldU[1][vector];
+            U[0][vector] /= 1.0 + neighbor_fraction;
+            U[m-1][vector] += neighbor_fraction*oldU[m-2][vector];
+            U[m-1][vector] /= 1.0 + neighbor_fraction;
+            for(unsigned int i = 1; i < m-1; i++) {
+                U[i][vector] += neighbor_fraction*(oldU[i-1][vector]+oldU[i+1][vector]);
+                U[i][vector] /= 1.0 + 2.0*neighbor_fraction;
+            }
+        }
+        P->SetU(U);
+    }
+}
+
+void Updating::Smear(Pidrix *P, unsigned int iterations, double neighbor_fraction) {
+    SmearX(P, iterations, neighbor_fraction);
+    SmearY(P, iterations, neighbor_fraction);
+}
