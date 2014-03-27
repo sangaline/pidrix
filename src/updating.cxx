@@ -4,6 +4,8 @@
 
 #include "TMatrixD.h"
 
+#include "math.h"
+
 using namespace Updating;
 
 double epsilon = 1e-16;
@@ -101,4 +103,34 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations) {
 
     P->SetU(U);
     P->SetV(V);
+}
+
+void Updating::Normalize(Pidrix *P) {
+    TMatrixD U = P->GetU();
+    TMatrixD V = P->GetV();
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    const double integral = P->Integral();
+    const double scale = P->Integral() / (U*V).Norm1();
+    for(int vector = 0; vector < rank; vector++) {
+        double Usum = 0;
+        for(unsigned int i = 0; i < m; i++) {
+            Usum += U[i][vector];
+        }
+        double Vsum = 0;
+        for(unsigned int j = 0; j < n; j++) {
+            Vsum += V[vector][j];
+        }
+        const double Uscale = sqrt(scale*Vsum/Usum);
+        const double Vscale = sqrt(scale*Usum/Vsum);
+
+        for(unsigned int i = 0; i < m; i++) {
+            U[i][vector] *= Uscale;
+        }
+        for(unsigned int j = 0; j < n; j++) {
+            V[vector][j] *= Vscale;
+        }
+    }
 }
