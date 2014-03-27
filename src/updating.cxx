@@ -343,3 +343,58 @@ void Updating::Smear(Pidrix *P, unsigned int iterations, double neighbor_fractio
     SmearX(P, iterations, neighbor_fraction);
     SmearY(P, iterations, neighbor_fraction);
 }
+
+void Updating::ForceGaussianX(Pidrix *P) {
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    const TMatrixD& oldV = P->GetV();
+    TMatrixD V = oldV;
+
+    for(int vector = 0; vector < rank; vector++) {
+        double mean = Quantifying::MeanX(P, vector);
+        double variance = Quantifying::VarianceX(P, vector);
+        double delta = Quantifying::X(P, 1) - Quantifying::X(P, 0);
+
+        double Vsum = 0;
+        for(unsigned int j = 0; j < n; j++) {
+            Vsum += oldV[vector][j];
+        }
+
+        const double factor = Vsum/sqrt(variance*6.28318530718);
+        for(unsigned int j = 0; j < n; j++) {
+            V[vector][j] = factor*exp(-0.5*pow( Quantifying::X(P,j) - mean, 2)/variance);
+        }
+    }
+    P->SetV(V);
+}
+
+void Updating::ForceGaussianY(Pidrix *P) {
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    const TMatrixD& oldU = P->GetU();
+    TMatrixD U = oldU;
+
+    for(int vector = 0; vector < rank; vector++) {
+        double mean = Quantifying::MeanY(P, vector);
+        double variance = Quantifying::VarianceY(P, vector);
+        double delta = Quantifying::Y(P, 1) - Quantifying::Y(P, 0);
+
+        double Usum = 0;
+        for(unsigned int i = 0; i < m; i++) {
+            Usum += oldU[i][vector];
+        }
+
+        const double factor = Usum/sqrt(variance*6.28318530718);
+        for(unsigned int i = 0; i < m; i++) {
+            U[i][vector] = factor*exp(-0.5*pow( Quantifying::Y(P,i) - mean, 2)/variance);
+        }
+    }
+    P->SetU(U);
+}
+
+void Updating::ForceGaussian(Pidrix *P) {
+    ForceGaussianY(P);
+    ForceGaussianX(P);
+}

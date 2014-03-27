@@ -17,6 +17,10 @@ namespace Updating {
     void Smear(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
     void SmearX(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
     void SmearY(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
+
+    void ForceGaussianX(Pidrix *P);
+    void ForceGaussianY(Pidrix *P);
+    void ForceGaussian(Pidrix *P);
 };
 
 #endif
