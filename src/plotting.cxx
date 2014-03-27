@@ -45,7 +45,7 @@ TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h, const char* name) {
     const int n = P->Columns();
     for(int i = 0; i < m; i++) {
         for(int j = 0; j < n; j++) {
-            h->SetBinContent(i+1, j+1, A[i][j]);
+            h->SetBinContent(j+1, i+1, A[i][j]);
         }
     }
 
@@ -64,12 +64,12 @@ TH2D* Plotting::Target(const Pidrix* P, TH2D* h, const char* name) {
     const TMatrixD& T = P->GetT();
     const TMatrixD& E = P->GetE();
 
-    const int m = P->Rows();
-    const int n = P->Columns();
-    for(int i = 0; i < m; i++) {
-        for(int j = 0; j < n; j++) {
-            h->SetBinContent(i+1, j+1, T[i][j]);
-            h->SetBinError(i+1, j+1, T[i][j]);
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+    for(unsigned int i = 0; i < m; i++) {
+        for(unsigned int j = 0; j < n; j++) {
+            h->SetBinContent(j+1, i+1, T[i][j]);
+            h->SetBinError(j+1, i+1, T[i][j]);
         }
     }
 

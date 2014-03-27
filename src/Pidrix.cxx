@@ -60,8 +60,8 @@ void Pidrix::SetTarget(TH2 *target, bool randomize) {
 
     for(int i = 0; i < maxm; i++) {
         for(int j = 0; j < maxn; j++) {
-            (*T)[i][j] = target->GetBinContent(i+1, j+1);
-            (*E)[i][j] = target->GetBinError(i+1, j+1);
+            (*T)[i][j] = target->GetBinContent(j+1, i+1);
+            (*E)[i][j] = target->GetBinError(j+1, i+1);
         }
     }
     xlow = target->GetXaxis()->GetBinLowEdge(1);
