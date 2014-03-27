@@ -128,3 +128,26 @@ TH1D* Plotting::DistributionY(const Pidrix* P, unsigned int vector, TH1D* h) {
 
     return h;
 }
+
+TH2D* Plotting::DistributionXY(const Pidrix* P, unsigned int vector, TH2D* h) {
+    if(h == 0) {
+        h = new TH2D("", "Distribution XY;x;y", 
+            P->Columns(), P->LowX(), P->HighX(),
+            P->Rows(), P->LowY(), P->HighY());
+    }
+    else {
+        h->Reset();
+    }
+    const TMatrixD& U = P->GetU();
+    const TMatrixD& V = P->GetV();
+
+    const int m = P->Rows();
+    const int n = P->Columns();
+    for(int i = 0; i < m; i++) {
+        for(int j = 0; j < n; j++) {
+            h->SetBinContent(j+1, i+1, U[i][vector]*V[vector][j]);
+        }
+    }
+
+    return h;
+}
