@@ -3,11 +3,17 @@
 
 #include "TNamed.h"
 class Pidrix;
+class TObjArray;
 
 class Pidrixter : public TNamed {
+  private:
+    TObjArray *pidrixes;
+    unsigned int Nstat, Nsyst, Ntotal;
+
   public:
-    Pidrixter(const Pidrix *P = 0, unsigned int Nstat = 10, unsigned int Nsyst = 10);
-    void Populate(const Pidrix *P, unsigned int Nstat = 10, unsigned int Nsyst = 10);
+    Pidrixter(const Pidrix *P = 0, unsigned int Nstatistical = 10, unsigned int Nsystematic = 10);
+    ~Pidrixter();
+    void Populate(const Pidrix *P, unsigned int Nstatistical = 10, unsigned int Nsystematic = 10);
     void Reset();
 
     ClassDef(Pidrixter,1) //PID Matrix Factorization
