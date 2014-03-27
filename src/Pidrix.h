@@ -25,6 +25,7 @@ class Pidrix : public TNamed {
     ~Pidrix();
 
     void SetTarget(TH2 *target, bool randomize = false);
+    void SetTarget(Pidrix *P, bool randomize = false);
 
     TGraph* SVGraph(TGraph *t = 0);
 

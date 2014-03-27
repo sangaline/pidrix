@@ -1,5 +1,7 @@
 #include "Pidrix.h"
 
+#include "plotting.h"
+
 #include "TVectorD.h"
 #include "TMatrixD.h"
 #include "TDecompSVD.h"
@@ -32,6 +34,12 @@ Pidrix::~Pidrix() {
     delete V;
     delete E;
     delete SVD;
+}
+
+void Pidrix::SetTarget(Pidrix *P, bool randomize) {
+    TH2 *target = Plotting::Target(P,0,"");
+    SetTarget(target, randomize);
+    delete target;
 }
 
 void Pidrix::SetTarget(TH2 *target, bool randomize) {
