@@ -10,5 +10,6 @@
 #pragma link C++ defined_in "plotting.h";
 #pragma link C++ defined_in "updating.h";
 #pragma link C++ defined_in "norms.h";
+#pragma link C++ defined_in "quantifying.h";
 
 #endif
