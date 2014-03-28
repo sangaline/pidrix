@@ -400,3 +400,92 @@ void Updating::ForceGaussian(Pidrix *P) {
     ForceGaussianY(P);
     ForceGaussianX(P);
 }
+
+void Updating::ForceUnimodalX(Pidrix *P) {
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    TMatrixD V = P->GetV();
+
+    for(int vector = 0; vector < rank; vector++) {
+
+        double Vsum = 0;
+        double maxval = -1;
+        unsigned int maxbin;
+        for(unsigned int j = 0; j < n; j++) {
+            Vsum += V[vector][j];
+            if(V[vector][j] > maxval) {
+                maxbin = j;
+                maxval = V[vector][j];
+            }
+        }
+        double cumulative_correction = 0;
+        for(unsigned int j = 0; j < maxbin; j++) {
+            const double correction = (V[vector][j] - V[vector][j+1]);
+            if(correction > 0) {
+                V[vector][j+1] += correction;
+                cumulative_correction += correction;
+            }
+        }
+        for(unsigned int j = n-1; j > maxbin; j--) {
+            const double correction = (V[vector][j] - V[vector][j-1]);
+            if(correction > 0) {
+                V[vector][j-1] += correction;
+                cumulative_correction += correction;
+            }
+        }
+        const double scale = Vsum/(Vsum+cumulative_correction);
+        for(unsigned int j = 0; j < n; j++) {
+            V[vector][j] *= scale;
+        }
+
+    }
+    P->SetV(V);
+}
+
+void Updating::ForceUnimodalY(Pidrix *P) {
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    TMatrixD U = P->GetU();
+
+    for(int vector = 0; vector < rank; vector++) {
+
+        double Usum = 0;
+        double maxval = -1;
+        unsigned int maxbin;
+        for(unsigned int i = 0; i < m; i++) {
+            Usum += U[i][vector];
+            if(U[i][vector] > maxval) {
+                maxbin = i;
+                maxval = U[i][vector];
+            }
+        }
+        double cumulative_correction = 0;
+        for(unsigned int i = 0; i < maxbin; i++) {
+            const double correction = (U[i][vector] - U[i+1][vector]);
+            if(correction > 0) {
+                U[i+1][vector] += correction;
+                cumulative_correction += correction;
+            }
+        }
+        for(unsigned int i = m-1; i > maxbin; i--) {
+            const double correction = (U[i][vector] - U[i-1][vector]);
+            if(correction > 0) {
+                U[i-1][vector] += correction;
+                cumulative_correction += correction;
+            }
+        }
+
+        const double scale = Usum/(Usum+cumulative_correction);
+        for(unsigned int i = 0; i < m; i++) {
+            U[i][vector] *= scale;
+        }
+    }
+    P->SetU(U);
+}
+
+void Updating::ForceUnimodal(Pidrix *P) {
+    ForceUnimodalX(P);
+    ForceUnimodalY(P);
+}

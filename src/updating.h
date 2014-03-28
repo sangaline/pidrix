@@ -21,6 +21,9 @@ namespace Updating {
     void ForceGaussianX(Pidrix *P);
     void ForceGaussianY(Pidrix *P);
     void ForceGaussian(Pidrix *P);
+    void ForceUnimodalX(Pidrix *P);
+    void ForceUnimodalY(Pidrix *P);
+    void ForceUnimodal(Pidrix *P);
 };
 
 #endif
