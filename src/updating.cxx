@@ -112,7 +112,9 @@ void Updating::Normalize(Pidrix *P) {
     const unsigned int rank = P->Rank();
 
     const double integral = P->Integral();
-    const double scale = P->Integral() / (U*V).Norm1();
+    //FIXME: something is wrong with this scale factor
+    const double scale = 1;//P->Integral() / (U*V).Norm1();
+
     for(int vector = 0; vector < rank; vector++) {
         double Usum = 0;
         for(unsigned int i = 0; i < m; i++) {
