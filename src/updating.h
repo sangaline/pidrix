@@ -5,7 +5,9 @@ class Pidrix;
 
 namespace Updating {
     void MultiplicativeEuclidian(Pidrix *P, const unsigned int iterations = 1);
-    void MultiplicativeKL(Pidrix *P, const unsigned int iterations = 1);
+    void MultiplicativeKL(Pidrix *P, const unsigned int iterations = 1, double epsilon = 1e-16);
+    void MultiplicativeKLX(Pidrix *P, const unsigned int iterations = 1, double epsilon = 1e-16);
+    void MultiplicativeKLY(Pidrix *P, const unsigned int iterations = 1, double epsilon = 1e-16);
 
     void Normalize(Pidrix *P);
     void ScaleX(Pidrix *P, double factor);
