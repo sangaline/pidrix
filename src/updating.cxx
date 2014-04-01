@@ -15,7 +15,12 @@ void CleanElementDiv(TMatrixD& A, TMatrixD&B, double epsilon = 1e-16) {
     const unsigned int n = A.GetNcols();
     for(unsigned int i = 0; i < m; i++) {
         for(unsigned int j = 0; j < n; j++) {
-            A[i][j] /= B[i][j] + epsilon;
+            if(B[i][j] > 0 || epsilon > 0) {
+                A[i][j] /= B[i][j] + epsilon;
+            }
+            else {
+                A[i][j] = 0;
+            }
         }
     }
 }
@@ -63,7 +68,9 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations, double
             for(unsigned int j = 0; j < rank; j++) {
                 double sum = 0;
                 for(unsigned int mu = 0; mu < n; mu++) {
-                    sum += V[j][mu]*T[i][mu]/(A[i][mu]+epsilon);
+                    if(A[i][mu] > 0 || epsilon > 0) {
+                        sum += V[j][mu]*T[i][mu]/(A[i][mu]+epsilon);
+                    }
                 }
                 U[i][j] *= sum;
 
@@ -71,11 +78,11 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations, double
                 for(unsigned int mu = 0; mu < n; mu++) {
                     sum += V[j][mu];
                 }
-                if(sum == 0) {
-                    U[i][j] = 0; 
+                if(sum > 0 || epsilon > 0) {
+                    U[i][j] /= (sum+epsilon);
                 }
                 else {
-                    U[i][j] /= (sum+epsilon);
+                    U[i][j] = 0;
                 }
             }
         }
@@ -86,7 +93,9 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations, double
             for(unsigned int j = 0; j < n; j++) {
                 double sum = 0;
                 for(unsigned int mu = 0; mu < m; mu++) {
-                    sum += U[mu][i]*T[mu][j]/(A[mu][j]+epsilon);
+                    if(A[mu][j] > 0 || epsilon > 0) {
+                        sum += U[mu][i]*T[mu][j]/(A[mu][j]+epsilon);
+                    }
                 }
                 V[i][j] *= sum;
 
@@ -94,7 +103,12 @@ void Updating::MultiplicativeKL(Pidrix *P, const unsigned int iterations, double
                 for(unsigned int mu = 0; mu < m; mu++) {
                     sum += U[mu][i];
                 }
-                V[i][j] /= (sum+epsilon);
+                if(sum > 0 || epsilon > 0) {
+                    V[i][j] /= (sum+epsilon);
+                }
+                else {
+                    V[i][j] = 0;
+                }
             }
         }
     }
@@ -120,7 +134,9 @@ void Updating::MultiplicativeKLY(Pidrix *P, const unsigned int iterations, doubl
             for(unsigned int j = 0; j < rank; j++) {
                 double sum = 0;
                 for(unsigned int mu = 0; mu < n; mu++) {
-                    sum += V[j][mu]*T[i][mu]/(A[i][mu]+epsilon);
+                    if(A[i][mu] > 0 || epsilon > 0) {
+                        sum += V[j][mu]*T[i][mu]/(A[i][mu]+epsilon);
+                    }
                 }
                 U[i][j] *= sum;
 
@@ -128,11 +144,11 @@ void Updating::MultiplicativeKLY(Pidrix *P, const unsigned int iterations, doubl
                 for(unsigned int mu = 0; mu < n; mu++) {
                     sum += V[j][mu];
                 }
-                if(sum == 0) {
-                    U[i][j] = 0; 
+                if(sum > 0 || epsilon > 0) {
+                    U[i][j] /= (sum+epsilon);
                 }
                 else {
-                    U[i][j] /= (sum+epsilon);
+                    U[i][j] = 0; 
                 }
             }
         }
@@ -160,7 +176,9 @@ void Updating::MultiplicativeKLX(Pidrix *P, const unsigned int iterations, doubl
             for(unsigned int j = 0; j < n; j++) {
                 double sum = 0;
                 for(unsigned int mu = 0; mu < m; mu++) {
-                    sum += U[mu][i]*T[mu][j]/(A[mu][j]+epsilon);
+                    if(A[mu][j] > 0 || epsilon > 0) {
+                        sum += U[mu][i]*T[mu][j]/(A[mu][j]+epsilon);
+                    }
                 }
                 V[i][j] *= sum;
 
@@ -168,7 +186,12 @@ void Updating::MultiplicativeKLX(Pidrix *P, const unsigned int iterations, doubl
                 for(unsigned int mu = 0; mu < m; mu++) {
                     sum += U[mu][i];
                 }
-                V[i][j] /= (sum+epsilon);
+                if(sum > 0 || epsilon > 0) {
+                    V[i][j] /= (sum+epsilon);
+                }
+                else {
+                    V[i][j] = 0;
+                }
             }
         }
     }
