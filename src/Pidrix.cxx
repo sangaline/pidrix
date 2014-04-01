@@ -37,7 +37,7 @@ Pidrix::~Pidrix() {
 }
 
 void Pidrix::SetTarget(const Pidrix *P, bool randomize) {
-    TH2 *target = Plotting::Target(P,0,"");
+    TH2 *target = Plotting::Target(P,0);
     SetTarget(target, randomize);
     delete target;
 }
