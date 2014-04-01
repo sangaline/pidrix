@@ -21,9 +21,9 @@ ROOTGLIBS    := $(shell root-config --glibs)
 
 
 CXX           = g++
-CXXFLAGS      = -O  -fPIC
+CXXFLAGS      = -O3 -fPIC
 LD            = g++
-LDFLAGS       = -O  
+LDFLAGS       = -O3  
 ifeq ($(ARCH),macosx)
 SOFLAGS       = -dynamiclib -single_module -undefined dynamic_lookup
 else
