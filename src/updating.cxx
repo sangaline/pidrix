@@ -490,6 +490,48 @@ void Updating::ForceGaussianY(Pidrix *P) {
     P->SetU(U);
 }
 
+void Updating::ForceGaussianX(Pidrix *P, unsigned int vector, double mean, double sigma) {
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    const TMatrixD& oldV = P->GetV();
+    TMatrixD V = oldV;
+    const double variance = sigma*sigma;
+    double delta = Quantifying::X(P, 1) - Quantifying::X(P, 0);
+
+    double Vsum = 0;
+    for(unsigned int j = 0; j < n; j++) {
+        Vsum += oldV[vector][j];
+    }
+
+    const double factor = Vsum/sqrt(variance*6.28318530718);
+    for(unsigned int j = 0; j < n; j++) {
+        V[vector][j] = factor*exp(-0.5*pow( Quantifying::X(P,j) - mean, 2)/variance);
+    }
+    P->SetV(V);
+}
+
+void Updating::ForceGaussianY(Pidrix *P, unsigned int vector, double mean, double sigma) {
+    const unsigned int m = P->Rows();
+    const unsigned int rank = P->Rank();
+
+    const TMatrixD& oldU = P->GetU();
+    TMatrixD U = oldU;
+    const double variance = sigma*sigma;
+    double delta = Quantifying::Y(P, 1) - Quantifying::Y(P, 0);
+
+    double Usum = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        Usum += oldU[i][vector];
+    }
+
+    const double factor = Usum/sqrt(variance*6.28318530718);
+    for(unsigned int i = 0; i < m; i++) {
+        U[i][vector] = factor*exp(-0.5*pow( Quantifying::Y(P,i) - mean, 2)/variance);
+    }
+    P->SetU(U);
+}
+
 void Updating::ForceGaussian(Pidrix *P) {
     ForceGaussianY(P);
     ForceGaussianX(P);
