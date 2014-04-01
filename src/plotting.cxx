@@ -5,6 +5,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TMath.h"
 
 #include "TVectorD.h"
 #include "TMatrixD.h"
@@ -47,6 +48,7 @@ TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h, const char* name) {
     for(int i = 0; i < m; i++) {
         for(int j = 0; j < n; j++) {
             h->SetBinContent(j+1, i+1, A[i][j]);
+            h->SetBinError(j+1, i+1, TMath::Sqrt(A[i][j]));
         }
     }
 
@@ -70,7 +72,7 @@ TH2D* Plotting::Target(const Pidrix* P, TH2D* h, const char* name) {
     for(unsigned int i = 0; i < m; i++) {
         for(unsigned int j = 0; j < n; j++) {
             h->SetBinContent(j+1, i+1, T[i][j]);
-            h->SetBinError(j+1, i+1, T[i][j]);
+            h->SetBinError(j+1, i+1, E[i][j]);
         }
     }
 
@@ -98,6 +100,7 @@ TH1D* Plotting::DistributionX(const Pidrix* P, unsigned int vector, TH1D* h) {
     }
     for(unsigned int j = 0; j < n; j++) {
         h->SetBinContent(j+1, V[vector][j]*U_contribution);
+        h->SetBinError(j+1, TMath::Sqrt(V[vector][j]*U_contribution));
     }
 
     return h;
@@ -124,6 +127,7 @@ TH1D* Plotting::DistributionY(const Pidrix* P, unsigned int vector, TH1D* h) {
     }
     for(unsigned int i = 0; i < m; i++) {
         h->SetBinContent(i+1, U[i][vector]*V_contribution);
+        h->SetBinError(i+1, TMath::Sqrt(U[i][vector]*V_contribution));
     }
 
     return h;
