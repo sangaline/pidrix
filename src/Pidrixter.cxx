@@ -38,11 +38,13 @@ void Pidrixter::Populate(const Pidrix *P, unsigned int Nstatistical, unsigned in
         //this Pidrix is a bootstrapped statistical variation on the main one
         Pidrix *P2 = new Pidrix();
         P2->SetTarget(P, true);
+        P2->SetRank(P->Rank());
         pidrixes->AddLast(P2);
         for(unsigned int j = 1; j < Nsyst; j++) {
             //these are statistically identical but the initial conditions will vary
             Pidrix *P3 = new Pidrix();
             P3->SetTarget(P2);
+            P3->SetRank(P->Rank());
             pidrixes->AddLast(P3);
         }
     }
