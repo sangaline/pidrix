@@ -1,6 +1,8 @@
 #include "plotting.h"
 
 #include "Pidrix.h"
+#include "Pidrixter.h"
+#include "norms.h"
 
 #include "TGraph.h"
 #include "TH1.h"
@@ -150,8 +152,66 @@ TH2D* Plotting::DistributionXY(const Pidrix* P, unsigned int vector, TH2D* h) {
     for(int i = 0; i < m; i++) {
         for(int j = 0; j < n; j++) {
             h->SetBinContent(j+1, i+1, U[i][vector]*V[vector][j]);
+            h->SetBinError(j+1, i+1, TMath::Sqrt(U[i][vector]*V[vector][j]));
         }
     }
 
     return h;
+}
+
+TGraph** Plotting::Clusters(Pidrixter* PXT, TGraph** t, double (*norm)(const TMatrixD*, const TMatrixD*)) {
+    Pidrix *P = PXT->Member(0);
+    const unsigned int rank = P->Rank();
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+    TMatrixD Ucolumn(m,1), Vrow(1,n);
+    TMatrixD Means[2] = {TMatrixD(m,n), TMatrixD(m,n)};
+    Means[0].Zero();
+    Means[1].Zero();
+
+    unsigned int count = 0;
+    for(unsigned int p = 0; p <  PXT->Members(); p++) {
+        P = PXT->Member(p);
+        TMatrixD U = P->GetU();
+        TMatrixD V = P->GetV();
+        for(int mu = 0; mu < 2; mu++) {
+            TMatrixDColumn(Ucolumn, 0) = TMatrixDColumn(U, mu);
+            TMatrixDRow(Vrow, 0) = TMatrixDRow(V, mu);
+            Means[mu] += Ucolumn*Vrow;
+        }
+        count++;
+    }
+    Means[0] *= 1.0/double(count);
+    Means[1] *= 1.0/double(count);
+
+    if(t == 0) {
+        t = new TGraph* [3];
+        t[0] = new TGraph();
+        t[1] = new TGraph();
+        t[2] = new TGraph();
+    }
+    else {
+        t[0]->Set(0);
+        t[1]->Set(0);
+        t[2]->Set(0);
+    }
+
+    double d = norm(&Means[0], &Means[1]);
+    TMatrixD UV(m,n);
+    for(unsigned int p = 0; p <  PXT->Members(); p++) {
+        P = PXT->Member(p);
+        TMatrixD U = P->GetU();
+        TMatrixD V = P->GetV();
+        //mu is the class
+        for(int mu = 0; mu < 2; mu++) {
+            TMatrixDColumn(Ucolumn, 0) = TMatrixDColumn(U, mu);
+            TMatrixDRow(Vrow, 0) = TMatrixDRow(V, mu);
+            UV = Ucolumn*Vrow;
+            double r0 = norm(&UV, &Means[0]);
+            double r1 = norm(&UV, &Means[1]);
+            t[mu]->SetPoint(p, r0, r1);
+            t[2]->SetPoint(p*2+mu, r0, r1);
+        }
+    }
+    return t;
 }

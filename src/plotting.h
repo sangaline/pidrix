@@ -1,10 +1,14 @@
 #ifndef plotting_h
 #define plotting_h
 
+#include "TMatrixDfwd.h"
+class Pidrixter;
 class Pidrix;
 class TGraph;
 class TH2D;
 class TH1D;
+
+namespace Norms { double SymmetrizedKullbackLeibler(const TMatrixD* A, const TMatrixD* B); }
 
 namespace Plotting {
     TGraph* SVGraph(const Pidrix* P, TGraph *t = 0);
@@ -13,6 +17,9 @@ namespace Plotting {
     TH1D* DistributionX(const Pidrix* P, unsigned int vector, TH1D* h = 0);
     TH1D* DistributionY(const Pidrix* P, unsigned int vector, TH1D* h = 0);
     TH2D* DistributionXY(const Pidrix* P, unsigned int vector, TH2D* h = 0);
+
+    //only for rank 2 Pidrixes
+    TGraph** Clusters(Pidrixter* PXT, TGraph** t = 0, double (*norm)(const TMatrixD*, const TMatrixD*) = Norms::SymmetrizedKullbackLeibler);
 
 };
 
