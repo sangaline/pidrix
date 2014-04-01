@@ -4,6 +4,7 @@
 #include "quantifying.h"
 
 #include "TMatrixD.h"
+#include "TRandom3.h"
 
 #include "math.h"
 
@@ -581,4 +582,29 @@ void Updating::ForceUnimodalY(Pidrix *P) {
 void Updating::ForceUnimodal(Pidrix *P) {
     ForceUnimodalX(P);
     ForceUnimodalY(P);
+}
+
+void Updating::RandomizeAmplitudes(Pidrix *P) {
+    const unsigned int rank = P->Rank();
+    const double integral = P->Integral();
+    TMatrixD U = P->GetU();
+    TMatrixD V = P->GetV();
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+    TMatrixD Ucolumn(m,1), Vrow(1,n);
+
+
+    for(int vector = 0; vector < rank; vector++) {
+        TMatrixDColumn(Ucolumn, 0) = TMatrixDColumn(U, vector);
+        TMatrixDRow(Vrow, 0) = TMatrixDRow(V, vector);
+        const double yield = (Ucolumn*Vrow).Sum();
+        const double new_yield = gRandom->Uniform(0,integral);
+        const double scale = new_yield/yield;
+        for(unsigned int i = 0; i < m; i++) {
+            U[i][vector] *= scale;
+        }
+    }
+    P->SetU(U);
+    P->SetV(V);
+    Normalize(P);
 }
