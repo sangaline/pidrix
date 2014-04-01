@@ -584,6 +584,22 @@ void Updating::ForceUnimodal(Pidrix *P) {
     ForceUnimodalY(P);
 }
 
+void Updating::SetYield(Pidrix *P, unsigned int vector, double yield) {
+    TMatrixD U = P->GetU();
+    const unsigned int m = P->Rows();
+    TMatrixD Ucolumn(m,1);
+
+    TMatrixDColumn(Ucolumn, 0) = TMatrixDColumn(U, vector);
+    const double old_yield = Quantifying::Yield(P, vector);
+    const double scale = yield/old_yield;
+
+    for(unsigned int i = 0; i < m; i++) {
+        U[i][vector] *= scale;
+    }
+    P->SetU(U);
+    Normalize(P);
+}
+
 void Updating::RandomizeAmplitudes(Pidrix *P) {
     const unsigned int rank = P->Rank();
     const double integral = P->Integral();
