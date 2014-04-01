@@ -45,7 +45,7 @@ void Pidrix::SetTarget(const Pidrix *P, bool randomize) {
 void Pidrix::SetTarget(TH2 *target, bool randomize) {
     integral = target->Integral();
     if(randomize) {
-        integral = int(integral);
+        integral = gRandom->Poisson(integral);
         TH2* new_target = (TH2*) target->Clone();
         new_target->Reset();
         new_target->FillRandom(target, int(integral));
