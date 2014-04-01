@@ -107,6 +107,14 @@ void Pidrix::SetV(const TMatrixD& newV) {
     (*V) = newV;
 }
 
+void Pidrix::SetU(const Pidrix* P) {
+    (*U) = P->GetU();
+}
+
+void Pidrix::SetV(const Pidrix* P) {
+    (*V) = P->GetV();
+}
+
 const TVectorD& Pidrix::SVDSigma() const {
     return SVD->GetSig();
 }

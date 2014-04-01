@@ -49,6 +49,8 @@ class Pidrix : public TNamed {
     const TMatrixD& GetE() const { return (*E); }
     void SetU(const TMatrixD& newU);
     void SetV(const TMatrixD& newV);
+    void SetU(const Pidrix* P);
+    void SetV(const Pidrix* P);
 
     double RandomUniform(double min, double max);
 
