@@ -32,9 +32,9 @@ TGraph* Plotting::SVGraph(const Pidrix *P, TGraph *t) {
     return t;
 }
 
-TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h, const char* name) {
+TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h) {
     if(h == 0) {
-        h = new TH2D(name, "Current Approximation;x;y", 
+        h = new TH2D("", "Current Approximation;x;y", 
             P->Columns(), P->LowX(), P->HighX(),
             P->Rows(), P->LowY(), P->HighY());
     }
@@ -57,9 +57,9 @@ TH2D* Plotting::Approximation(const Pidrix* P, TH2D* h, const char* name) {
     return h;
 }
 
-TH2D* Plotting::Target(const Pidrix* P, TH2D* h, const char* name) {
+TH2D* Plotting::Target(const Pidrix* P, TH2D* h) {
     if(h == 0) {
-        h = new TH2D(name, "Original Distribution;x;y", 
+        h = new TH2D("", "Original Distribution;x;y", 
             P->Columns(), P->LowX(), P->HighX(),
             P->Rows(), P->LowY(), P->HighY());
     }
