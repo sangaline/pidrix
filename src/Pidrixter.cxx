@@ -49,3 +49,17 @@ void Pidrixter::Populate(const Pidrix *P, unsigned int Nstatistical, unsigned in
         }
     }
 }
+
+unsigned int Pidrixter::Apply(bool (*updater)(Pidrix*)) {
+    unsigned int positives = 0;
+    for(unsigned int i = 0; i < Ntotal; i++) {
+        Pidrix *P = (Pidrix*) pidrixes->At(i);
+        if(updater(P)) positives++;
+    }
+
+    return positives;
+}
+
+Pidrix* Pidrixter::Member(unsigned int index) {
+    return (Pidrix*) pidrixes->At(index);
+}

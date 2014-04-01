@@ -15,6 +15,11 @@ class Pidrixter : public TNamed {
     ~Pidrixter();
     void Populate(const Pidrix *P, unsigned int Nstatistical = 10, unsigned int Nsystematic = 10);
     void Reset();
+    unsigned int Apply(bool (*updater)(Pidrix*));
+
+    unsigned int Members() { return Ntotal; }
+    Pidrix* Member(unsigned int index);
+
 
     ClassDef(Pidrixter,1) //PID Matrix Factorization
 };
