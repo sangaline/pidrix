@@ -128,3 +128,29 @@ double Norms::ChiSquared(Pidrix *P, bool per_ndf) {
         return sum;
     }
 }
+
+double Norms::ChiSquared(const TMatrixD* T, const TMatrixD* A) {
+    const unsigned int m = A->GetNrows();
+    const unsigned int n = A->GetNcols();
+    double sum = 0;
+    for(unsigned int i = 0; i < m; i++) {
+        for(unsigned int j = 0; j < n; j++) {
+            if( (*T)[i][j] > 0) {
+                sum += pow((*T)[i][j]-(*A)[i][j],2)/(*T)[i][j];
+            }
+        }
+    }
+    return sum;
+}
+
+double Norms::SymmetrizedChiSquared(const TMatrixD* A, const TMatrixD* B) {
+    return 0.5*(ChiSquared(A,B)+ChiSquared(B,A));
+}
+
+double Norms::Yields(const TMatrixD* T, const TMatrixD* A) {
+    return fabs(T->Sum()-A->Sum())/sqrt(T->Sum());
+}
+
+double Norms::SymmetrizedYields(const TMatrixD* A, const TMatrixD* B) {
+    return fabs(B->Sum()-A->Sum())/sqrt(pow(A->Sum(),2)+pow(B->Sum(), 2));
+}
