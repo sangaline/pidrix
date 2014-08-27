@@ -7,6 +7,8 @@
 #include "TMatrixD.h"
 #include "TMath.h"
 
+#include <iostream>
+using namespace std;
 using namespace Clustering;
 
 void Clustering::Reorder(Pidrix *P, unsigned int* order) {
@@ -32,7 +34,7 @@ void Clustering::Reorder(Pidrixter *PXT, unsigned int* order) {
     }
 }
 
-void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(const TMatrixD*, const TMatrixD*)) {
+bool Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(const TMatrixD*, const TMatrixD*), bool mixed_distribution) {
     Pidrix *P = PXT->Member(0);
     const unsigned int rank = P->Rank();
     const unsigned int m = P->Rows();
@@ -42,6 +44,7 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
     TMatrixD* Sum = new TMatrixD [rank];
     TMatrixD* Current = new TMatrixD [rank];
     TMatrixD* Mean = new TMatrixD [rank];
+    TMatrixD Mixed(m,n);
     unsigned int* order = new unsigned int[rank];
     unsigned int count = 0;
     TMatrixD Distances(rank, rank);
@@ -81,13 +84,25 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
             //compute the distance matrix
             for(unsigned int i = 0; i < rank; i++) {
                 for(unsigned int j = 0; j < rank; j++) {
-                    Distances[i][j] = norm(&Current[i], &Mean[j]);
+                    //compute the norms
+                    if(mixed_distribution) {
+                        Mixed = 0.5*(Current[i] + Mean[j]);
+                        Distances[i][j] = 0.5*( norm(&Current[i], &Mixed) + norm(&Mean[j], &Mixed) );
+                    }
+                    else {
+                        Distances[i][j] = norm(&Current[i], &Mean[j]);
+                    }
                 }
             }
+            if(iteration+1 == iterations) {
+                cout << "Distance matrix: \n";
+                Distances.Print();
+            }
+
             //find the optimal matchings
             for(unsigned int mu = 0; mu < rank; mu++) {
                 double minval = -1;
-                unsigned int mini, minj;
+                unsigned int mini = rank, minj = rank;
                 //find the closest remaining match
                 for(unsigned int i = 0; i < rank; i++) {
                     for(unsigned int j = 0; j < rank; j++) {
@@ -100,6 +115,10 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
                             }
                         }
                     }
+                }
+                if( mini == rank || minj == rank ) {
+                    cerr << "K-Means Clustering Failed! Likely caused by inf and nan distance measures.\n";
+                    return false;
                 }
                 //mind i vs j here, we want order[0] to be the index of what the first element 
                 //should be switched to in order to match the means
@@ -137,4 +156,6 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
     delete [] Current;
     delete [] Mean;
     delete [] order;
+
+    return true;
 }
