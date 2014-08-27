@@ -127,7 +127,7 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
     //reorder them from largest to smallest yields
     double* yields = new double[rank];
     for(unsigned int mu = 0; mu < rank; mu++) {
-        yields[mu] = Mean[mu].Norm1();
+        yields[mu] = Mean[mu].Sum();
     }
     TMath::Sort(rank, yields, order, true);
     Reorder(PXT, order);
