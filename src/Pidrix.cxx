@@ -123,3 +123,7 @@ double Pidrix::RandomUniform(double min, double max) {
     return gRandom->Uniform(min, max);
 }
 
+double Pidrix::RandomGaussian(double mu, double sigma) {
+    return gRandom->Gaus(mu, sigma);
+}
+

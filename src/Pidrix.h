@@ -53,6 +53,7 @@ class Pidrix : public TNamed {
     void SetV(const Pidrix* P);
 
     double RandomUniform(double min, double max);
+    double RandomGaussian(double mu, double sigma);
 
     const TVectorD& SVDSigma() const;
 
