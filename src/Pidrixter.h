@@ -20,6 +20,10 @@ class Pidrixter : public TNamed {
     unsigned int Members() { return Ntotal; }
     Pidrix* Member(unsigned int index);
 
+    double Expectation(double (*eval)(Pidrix*));
+    double TotalError(double (*eval)(Pidrix*));
+    double StatisticalError(double (*eval)(Pidrix*));
+    double SystematicError(double (*eval)(Pidrix*));
 
     ClassDef(Pidrixter,1) //PID Matrix Factorization
 };

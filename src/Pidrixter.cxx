@@ -2,6 +2,7 @@
 #include "Pidrix.h"
 
 #include "TObjArray.h"
+#include "TMath.h"
 
 ClassImp(Pidrixter)
 
@@ -66,4 +67,42 @@ unsigned int Pidrixter::Apply(bool (*updater)(Pidrix*)) {
 
 Pidrix* Pidrixter::Member(unsigned int index) {
     return (Pidrix*) pidrixes->At(index);
+}
+
+double Pidrixter::Expectation(double (*eval)(Pidrix*)) {
+    double sum = 0;
+    for(unsigned int i = 0; i < Ntotal; i++) {
+        sum += eval(Member(i));
+    }
+    return sum/double(Members());
+}
+
+double Pidrixter::TotalError(double (*eval)(Pidrix*)) {
+    double sum = 0, sum2 = 0;
+    for(unsigned int i = 0; i < Ntotal; i++) {
+        const double value = eval(Member(i));
+        sum += value;
+        sum2 += value*value;
+    }
+    return TMath::Sqrt((sum2 - sum*sum/double(Ntotal))/double(Ntotal-1));
+}
+
+double Pidrixter::StatisticalError(double (*eval)(Pidrix*)) {
+    return TMath::Sqrt( pow(TotalError(eval), 2) - pow(SystematicError(eval), 2) );
+}
+
+double Pidrixter::SystematicError(double (*eval)(Pidrix*)) {
+    unsigned int index = 0;
+    double average_error = 0;
+    while(index < Ntotal) {
+        double sum = 0, sum2 = 0;
+        for(unsigned int j = 0; j < Nsyst; j++) {
+            const double value = eval(Member(index));
+            sum += value;
+            sum2 += value*value;
+            index++;
+        }
+        average_error += TMath::Sqrt((sum2 - sum*sum/double(Nsyst))/double(Nsyst-1));
+    }
+    return average_error/double(Nstat);
 }
