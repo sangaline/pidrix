@@ -254,8 +254,8 @@ void Updating::ScaleY(Pidrix *P, double factor) {
             lowedge = meany + ((lowedge - meany)/factor);
             highedge = meany + ((highedge - meany)/factor);
             //which bins would they be in?
-            const int lowbin = floor((lowedge - ylow)/ydelta);
-            const int highbin = floor((highedge - ylow)/ydelta);
+            const int lowbin = (int) floor((lowedge - ylow)/ydelta);
+            const int highbin = (int) floor((highedge - ylow)/ydelta);
             double value = 0;
             if(lowbin == highbin) {
                 if(lowbin >= 0 && lowbin < m) {
@@ -307,8 +307,8 @@ void Updating::ScaleX(Pidrix *P, double factor) {
             lowedge = meanx + ((lowedge - meanx)/factor);
             highedge = meanx + ((highedge - meanx)/factor);
             //which bins would they be in?
-            const int lowbin = floor((lowedge - xlow)/xdelta);
-            const int highbin = floor((highedge - xlow)/xdelta);
+            const int lowbin = (int) floor((lowedge - xlow)/xdelta);
+            const int highbin = (int)  floor((highedge - xlow)/xdelta);
             double value = 0;
             if(lowbin == highbin) {
                 if(lowbin >= 0 && lowbin < n) {
