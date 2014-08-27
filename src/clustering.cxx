@@ -66,7 +66,7 @@ void Clustering::KMeans(Pidrixter *PXT, unsigned int iterations, double (*norm)(
                 TMatrixDRow(Vrow, 0) = TMatrixDRow(V, mu);
                 Current[mu] = Ucolumn*Vrow;
 
-                if(iteration > 0 && p > 0) {
+                if(iteration > 0 || p > 0) {
                     Mean[mu] = Sum[mu]*double(1.0/double(count));
                 }
                 else {
