@@ -20,7 +20,7 @@ namespace Updating {
     void SmearX(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
     void SmearY(Pidrix *P, unsigned int iterations = 1, double neighbor_fraction = 0.25);
 
-    void RandomizeAmplitudes(Pidrix *P);
+    void RandomizeAmplitudes(Pidrix *P, double randomness = 1.0);
     void SetYield(Pidrix *P, unsigned int vector, double yield);
 
     void ForceGaussianX(Pidrix *P);

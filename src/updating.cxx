@@ -639,10 +639,13 @@ void Updating::SetYield(Pidrix *P, unsigned int vector, double yield) {
         U[i][vector] *= scale;
     }
     P->SetU(U);
-    Normalize(P);
+    //Normalize(P);
 }
 
-void Updating::RandomizeAmplitudes(Pidrix *P) {
+void Updating::RandomizeAmplitudes(Pidrix *P, double randomness) {
+    if(randomness > 1) { randomness = 1; }
+    if(randomness < 0) { randomness = 0; }
+
     const unsigned int rank = P->Rank();
     const double integral = P->Integral();
     TMatrixD U = P->GetU();
@@ -656,7 +659,8 @@ void Updating::RandomizeAmplitudes(Pidrix *P) {
         TMatrixDColumn(Ucolumn, 0) = TMatrixDColumn(U, vector);
         TMatrixDRow(Vrow, 0) = TMatrixDRow(V, vector);
         const double yield = (Ucolumn*Vrow).Sum();
-        const double new_yield = gRandom->Uniform(0,integral);
+        const double new_yield = (gRandom->Uniform(0,yield*2.0))*randomness 
+                                + (1.0-randomness)*yield;
         const double scale = new_yield/yield;
         for(unsigned int i = 0; i < m; i++) {
             U[i][vector] *= scale;
