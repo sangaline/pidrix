@@ -23,6 +23,10 @@ namespace Norms {
     double SymmetrizedKullbackLeibler(const TVectorD* A, const TVectorD* B);
     double SymmetrizedKullbackLeibler(const TH1* A, const TH1* B);
 
+    //A well behaved norm for clustering, chi squared like quantity for means and yields
+    double MeansAndYields(const TMatrixD* T, const TMatrixD* A);
+    double SymmetrizedMeansAndYields(const TMatrixD* A, const TMatrixD* B);
+
 
     double ChiSquared(Pidrix *P, bool per_ndf = true);
     double ChiSquared(const TMatrixD* T, const TMatrixD* A);

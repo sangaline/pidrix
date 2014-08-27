@@ -103,6 +103,49 @@ double Norms::SymmetrizedKullbackLeibler(const TH1* A, const TH1* B) {
     return 0.5*(KullbackLeibler(A, B) + KullbackLeibler(B, A));
 }
 
+double Norms::MeansAndYields(const TMatrixD* T, const TMatrixD* A) {
+    double sumA_x = 0, sumT_x = 0, sum2T_x = 0;
+    double sumA_y = 0, sumT_y = 0, sum2T_y = 0;
+    double yieldT = 0, yieldA = 0;
+    const unsigned int m = T->GetNrows();
+    const unsigned int n = T->GetNcols();
+    for(unsigned int i = 0; i < m; i++) {
+        for(unsigned int j = 0; j < n; j++) {
+            const double t = (*T)[i][j];
+            const double a = (*A)[i][j];
+
+            sumA_x += a*double(i);
+            sumA_y += a*double(j);
+            yieldA += a;
+
+            sumT_x += t*double(i);
+            sum2T_x += t*double(i*i);
+            sumT_y += t*double(j);
+            sum2T_y += t*double(j*j);
+            yieldT += t;
+        }
+    }
+    double meanA_x = sumA_x/yieldA;
+    double meanA_y = sumA_y/yieldA;
+
+    double meanT_x = sumT_x/yieldT;
+    double meanT_y = sumT_y/yieldT;
+    double varianceT_x = (sum2T_x/yieldT) - meanT_x*meanT_x;
+    double varianceT_y = (sum2T_y/yieldT) - meanT_y*meanT_y;
+
+    double chi2 = 0;
+    chi2 += pow( meanT_x - meanA_x, 2)/varianceT_x;
+    chi2 += pow( meanT_y - meanA_y, 2)/varianceT_y;
+    chi2 += pow( yieldT - yieldA, 2)/yieldT;
+    chi2 /= 3.0;
+
+    return chi2;
+}
+
+double Norms::SymmetrizedMeansAndYields(const TMatrixD* A, const TMatrixD* B) {
+    return 0.5*(MeansAndYields(A, B) + MeansAndYields(B, A));
+}
+
 double Norms::ChiSquared(Pidrix *P, bool per_ndf) {
     const TMatrixD& T = P->GetT();
     const TMatrixD& E = P->GetE();
