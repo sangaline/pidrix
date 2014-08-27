@@ -32,6 +32,8 @@ namespace Updating {
     void ForceUnimodalX(Pidrix *P);
     void ForceUnimodalY(Pidrix *P);
     void ForceUnimodal(Pidrix *P);
+
+    double GibbsSample(Pidrix *P, unsigned int iterations = 1, double uncertainty_scale = 0.1, bool rootN_scaling = false);
 };
 
 #endif

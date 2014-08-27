@@ -5,6 +5,7 @@
 
 #include "TMatrixD.h"
 #include "TRandom3.h"
+#include "TMath.h"
 
 #include "math.h"
 
@@ -669,4 +670,138 @@ void Updating::RandomizeAmplitudes(Pidrix *P, double randomness) {
     P->SetU(U);
     P->SetV(V);
     Normalize(P);
+}
+
+double Updating::GibbsSample(Pidrix *P, unsigned int iterations, double uncertainty_scale, bool rootN_scaling) {
+    TMatrixD U = P->GetU();
+    TMatrixD V = P->GetV();
+    const TMatrixD T = P->GetT();
+    const unsigned int m = P->Rows();
+    const unsigned int n = P->Columns();
+    const unsigned int rank = P->Rank();
+
+    double *Usums = new double [rank];
+    double *Vsums = new double [rank];
+    for(unsigned int vector = 0; vector < rank; vector++) {
+        Usums[vector] = 0;
+        Vsums[vector] = 0;
+        for(unsigned int i = 0; i < m; i++) {
+            Usums[vector] += U[i][vector];
+        }
+        for(unsigned int j = 0; j < m; j++) {
+            Vsums[vector] += V[vector][j];
+        }
+    }
+
+    //build a log likelihood matrix for each bin
+    TMatrixD A = U*V;
+    //the m row and n column will hold the sums
+    TMatrixD LL(m+1, n+1);
+    for(unsigned int i = 0; i < m; i++) {
+        double row_sum = 0;
+        for(unsigned int j = 0; j < n; j++) {
+            LL[i][j] = log(TMath::Poisson(T[i][j], A[i][j]));
+            row_sum += LL[i][j];
+        }
+        LL[i][n] = row_sum;
+    }
+    for(unsigned int j = 0; j < n; j++) {
+        double column_sum = 0;
+        for(unsigned int i = 0; i < m; i++) {
+            column_sum += LL[i][j];
+        }
+        LL[m][j] = column_sum;
+    }
+
+    unsigned int successes = 0, failures = 0;
+
+    for(unsigned int iteration = 0; iteration < iterations; iteration++) {
+        for(unsigned int vector = 0; vector < rank; vector++) {
+            for(unsigned int i = 0; i < m; i++) {
+                //interpolation is done so that the transition kernel is symmetric
+                const double left_neighbor = i>0 ? U[i-1][vector] : 0;
+                const double right_neighbor = i+1<m ? U[i+1][vector] : 0;
+                const double interpolated = 0.5*(left_neighbor + right_neighbor);
+                // +1 so it can't get stuck at 0
+                const double fractional_sigma = uncertainty_scale*0.1*(rootN_scaling?1.0/sqrt(interpolated*Vsums[vector] + 1.0):1.0);
+                const double sigma = fractional_sigma*(interpolated + 1.0/Vsums[vector]);
+                const double delta = P->RandomGaussian(0, sigma);
+                const double new_value = U[i][vector] + delta;
+                //negative steps are invalid
+                if(new_value < 0) {
+                    continue;
+                }
+
+                double log_likelihood = 0;
+                double *log_likelihood_cache = new double [n];
+                for(unsigned int j = 0; j < n; j++) {
+                    const double new_approximation = A[i][j] + delta*V[vector][j];
+                    log_likelihood_cache[j] = log(TMath::Poisson(T[i][j], new_approximation));
+                    log_likelihood += log_likelihood_cache[j];
+                }
+
+                const double alpha = exp(log_likelihood - LL[i][n]);
+                if(alpha > 1 || alpha > P->RandomUniform(0, 1)) {
+                    U[i][vector] = new_value;
+                    Usums[vector] += delta;
+                    for(unsigned int j = 0; j < n; j++) {
+                        A[i][j] += delta*V[vector][j];
+                        LL[i][j] = log_likelihood_cache[j];
+                    }
+                    LL[i][n] = log_likelihood;
+                    successes++;
+                }
+                else {
+                    failures++;
+                }
+                delete [] log_likelihood_cache;
+            }
+            for(unsigned int j = 0; j < n; j++) {
+                //interpolation is done so that the transition kernel is symmetric
+                const double left_neighbor = j>0 ? V[vector][j-1] : 0;
+                const double right_neighbor = j+1<n ? V[vector][j+1] : 0;
+                const double interpolated = 0.5*(left_neighbor + right_neighbor);
+                // +1 so it can't get stuck at 0
+                const double fractional_sigma = uncertainty_scale*0.1*(rootN_scaling?1.0/sqrt(interpolated*Usums[vector] + 1.0):1.0);
+                const double sigma = fractional_sigma*(interpolated + 1.0/Usums[vector]);
+                const double delta = P->RandomGaussian(0, sigma);
+                const double new_value = V[vector][j] + delta;
+                //negative steps are invalid
+                if(new_value < 0) {
+                    continue;
+                }
+
+                double log_likelihood = 0;
+                double *log_likelihood_cache = new double [m];
+                for(unsigned int i = 0; i < m; i++) {
+                    const double new_approximation = A[i][j] + delta*U[i][vector];
+                    log_likelihood_cache[i] = log(TMath::Poisson(T[i][j], new_approximation));
+                    log_likelihood += log_likelihood_cache[i];
+                }
+
+                const double alpha = exp(log_likelihood - LL[m][j]);
+                if(alpha > 1 || alpha > P->RandomUniform(0, 1)) {
+                    V[vector][j] = new_value;
+                    Vsums[vector] += delta;
+                    for(unsigned int i = 0; i < m; i++) {
+                        A[i][j] += delta*U[i][vector];
+                        LL[i][j] = log_likelihood_cache[i];
+                    }
+                    LL[m][j] = log_likelihood;
+                    successes++;
+                }
+                else {
+                    failures++;
+                }
+                delete [] log_likelihood_cache;
+            }
+        }
+    }
+
+    P->SetU(U);
+    P->SetV(V);
+    delete [] Usums;
+    delete [] Vsums;
+
+    return double(successes)/double(successes+failures);
 }
