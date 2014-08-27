@@ -159,6 +159,117 @@ TH2D* Plotting::DistributionXY(const Pidrix* P, unsigned int vector, TH2D* h) {
     return h;
 }
 
+TH2D* Plotting::DistributionXY(Pidrixter* PDX, unsigned int vector, TH2D* h) {
+    Pidrix *P = PDX->Member(0);
+    if(h == 0) {
+        h = new TH2D("", "Distribution XY;x;y", 
+            P->Columns(), P->LowX(), P->HighX(),
+            P->Rows(), P->LowY(), P->HighY());
+    }
+    else {
+        h->Reset();
+    }
+    const double nP = double(PDX->Members());
+    for(unsigned int p = 0; p < nP; p++) {
+        P = PDX->Member(p);
+        const TMatrixD& U = P->GetU();
+        const TMatrixD& V = P->GetV();
+
+        const int m = P->Rows();
+        const int n = P->Columns();
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                const double w = U[i][vector]*V[vector][j];
+                h->SetBinContent(j+1, i+1, h->GetBinContent(j+1,i+1) + w);
+                //the bin error is being used as an accumlator for w^2
+                h->SetBinError(j+1, i+1, h->GetBinError(j+1,i+1) + w*w);
+            }
+        }
+    }
+    for(int i = 1; i <= h->GetNbinsY(); i++) {
+        for(int j = 1; j < h->GetNbinsX(); j++) {
+            //this represents the total error, it would need a factor of 1/sqrt(Np) to be the error on resolving the mean
+            double weight_sd = TMath::Sqrt((h->GetBinError(j,i) - (TMath::Power(h->GetBinContent(j, i),2)/nP))/(nP-1.0));
+            h->SetBinError(j, i, weight_sd);
+            h->SetBinContent(j, i, h->GetBinContent(j,i)/nP);
+        }
+    }
+
+    return h;
+}
+
+TH1D* Plotting::DistributionX(Pidrixter* PDX, unsigned int vector, TH1D* h) {
+    Pidrix *P = PDX->Member(0);
+    if(h == 0) {
+        h = new TH1D("", "Distribution X;x;counts", 
+            P->Columns(), P->LowX(), P->HighX());
+    }
+    else {
+        h->Reset();
+    }
+    const double nP = double(PDX->Members());
+    for(unsigned int p = 0; p < nP; p++) {
+        P = PDX->Member(p);
+        const TMatrixD& U = P->GetU();
+        const TMatrixD& V = P->GetV();
+
+        const int m = P->Rows();
+        const int n = P->Columns();
+        for(int j = 0; j < n; j++) {
+            double w = 0;
+            for(int i = 0; i < m; i++) {
+                w += U[i][vector]*V[vector][j];
+            }
+            h->SetBinContent(j+1, h->GetBinContent(j+1) + w);
+            h->SetBinError(j+1, h->GetBinError(j+1) + w*w);
+        }
+    }
+
+    for(int j = 1; j < h->GetNbinsX(); j++) {
+        double weight_sd = TMath::Sqrt((h->GetBinError(j) - (TMath::Power(h->GetBinContent(j),2)/nP))/(nP-1.0));
+        h->SetBinError(j, weight_sd);
+        h->SetBinContent(j, h->GetBinContent(j)/nP);
+    }
+
+    return h;
+}
+
+TH1D* Plotting::DistributionY(Pidrixter* PDX, unsigned int vector, TH1D* h) {
+    Pidrix *P = PDX->Member(0);
+    if(h == 0) {
+        h = new TH1D("", "Distribution Y;y;counts", 
+            P->Rows(), P->LowY(), P->HighY());
+    }
+    else {
+        h->Reset();
+    }
+    const double nP = double(PDX->Members());
+    for(unsigned int p = 0; p < nP; p++) {
+        P = PDX->Member(p);
+        const TMatrixD& U = P->GetU();
+        const TMatrixD& V = P->GetV();
+
+        const int m = P->Rows();
+        const int n = P->Columns();
+        for(int i = 0; i < m; i++) {
+            double w = 0;
+            for(int j = 0; j < n; j++) {
+                w += U[i][vector]*V[vector][j];
+            }
+            h->SetBinContent(i+1, h->GetBinContent(i+1) + w);
+            h->SetBinError(i+1, h->GetBinError(i+1) + w*w);
+        }
+    }
+
+    for(int i = 1; i <= h->GetNbinsX(); i++) {
+        double weight_sd = TMath::Sqrt((h->GetBinError(i) - (TMath::Power(h->GetBinContent(i),2)/nP))/(nP-1.0));
+        h->SetBinError(i, weight_sd);
+        h->SetBinContent(i, h->GetBinContent(i)/nP);
+    }
+
+    return h;
+}
+
 TGraph** Plotting::Clusters(Pidrixter* PXT, TGraph** t, double (*norm)(const TMatrixD*, const TMatrixD*)) {
     Pidrix *P = PXT->Member(0);
     const unsigned int rank = P->Rank();
