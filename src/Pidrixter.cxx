@@ -36,9 +36,9 @@ void Pidrixter::Populate(const Pidrix *P, unsigned int Nstatistical, unsigned in
     Ntotal = Nstat*Nsyst;
 
     for(unsigned int i = 0; i < Nstat; i++) {
-        //this Pidrix is a bootstrapped statistical variation on the main one
+        //this Pidrix is a bootstrapped statistical variation on the main one iff Nstat > 1
         Pidrix *P2 = new Pidrix();
-        P2->SetTarget(P, true);
+        P2->SetTarget(P, Nstat > 1);
         P2->SetRank(P->Rank());
         P2->SetU(P);
         P2->SetV(P);
