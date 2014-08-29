@@ -158,9 +158,6 @@ void Updating::MultiplicativeKLY(Pidrix *P, const unsigned int iterations, doubl
     P->SetU(U);
 }
 
-#include <iostream>
-using namespace std;
-
 void Updating::MultiplicativeKLX(Pidrix *P, const unsigned int iterations, double epsilon) {
     const TMatrixD& U = P->GetU();
     TMatrixD V = P->GetV();
@@ -697,18 +694,23 @@ double Updating::GibbsSample(Pidrix *P, unsigned int iterations, double uncertai
     TMatrixD A = U*V;
     //the m row and n column will hold the sums
     TMatrixD LL(m+1, n+1);
+    const double log_zero = log(0);
     for(unsigned int i = 0; i < m; i++) {
         double row_sum = 0;
         for(unsigned int j = 0; j < n; j++) {
             LL[i][j] = log(TMath::Poisson(T[i][j], A[i][j]));
-            row_sum += LL[i][j];
+            if(LL[i][j] != log_zero) {
+                row_sum += LL[i][j];
+            }
         }
         LL[i][n] = row_sum;
     }
     for(unsigned int j = 0; j < n; j++) {
         double column_sum = 0;
         for(unsigned int i = 0; i < m; i++) {
-            column_sum += LL[i][j];
+            if(LL[i][j] != log_zero) {
+                column_sum += LL[i][j];
+            }
         }
         LL[m][j] = column_sum;
     }
@@ -737,7 +739,12 @@ double Updating::GibbsSample(Pidrix *P, unsigned int iterations, double uncertai
                 for(unsigned int j = 0; j < n; j++) {
                     const double new_approximation = A[i][j] + delta*V[vector][j];
                     log_likelihood_cache[j] = log(TMath::Poisson(T[i][j], new_approximation));
-                    log_likelihood += log_likelihood_cache[j];
+                    if(log_likelihood_cache[j] != log_zero) {
+                        log_likelihood += log_likelihood_cache[j];
+                    }
+                    else if(LL[i][j] != log_zero) {
+                        log_likelihood += LL[i][j];
+                    }
                 }
 
                 const double alpha = exp(log_likelihood - LL[i][n]);
@@ -776,7 +783,12 @@ double Updating::GibbsSample(Pidrix *P, unsigned int iterations, double uncertai
                 for(unsigned int i = 0; i < m; i++) {
                     const double new_approximation = A[i][j] + delta*U[i][vector];
                     log_likelihood_cache[i] = log(TMath::Poisson(T[i][j], new_approximation));
-                    log_likelihood += log_likelihood_cache[i];
+                    if(log_likelihood_cache[i] != log_zero) {
+                        log_likelihood += log_likelihood_cache[i];
+                    }
+                    else if(LL[i][j] != log_zero) {
+                        log_likelihood += LL[i][j];
+                    }
                 }
 
                 const double alpha = exp(log_likelihood - LL[m][j]);
