@@ -23,4 +23,8 @@ Here are several examples of the library in action. The lower right histogram in
 
 <img src="http://sangaline.com/github/pidrix/animation1.gif"/>
 
-In this simple case, you can see that the extracted particle distributions and yields match very well with the true answers.
+In this animation, you can see the extracted yields and distributions evolve over subsequent iterations. The extracted particle distributions and yields match almost perfectly in this simple case (note that the z-axis is on a log scale so the ghosting effects are at much less than the 1% level).
+
+<img src="http://sangaline.com/github/pidrix/animation3.gif"/>
+
+This example includes sinusoidal structure that makes determining the individual distributions far more difficult. The method is still able to determine the individual particle distributions without having any prior information about these distributions.
