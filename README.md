@@ -1,4 +1,18 @@
 pidrix
 ======
 
-Particle Identification Matrix Factorization Library
+Distinguishing between various particle species is an essential requirement in a vast range of analyses in nuclear and high energy physics.
+Various detectors provide measurements of quantities such as time of flight, ionization energy loss, calorimeter energy deposition, and Čerenkov angle which generally differ between particle species for a given momentum and can be use for particle identification (PID).
+Variations in the quantities themselves, uncertainties in the measurements, and biases in calibrations all pose issues that make probabilistic PID difficult or impossible for certain momentum ranges where measurement distributions overlap for different species.
+This situation is typically handled by making assumptions about the distributions of measurements and using fits to the data to extract yields and to estimate the admixture of particle species for different measurement values.
+Even small inaccuracies in these shape assumptions can lead to large biases in measured yields and subsequently probabilistic estimates of PID.
+
+Pidrix is a library that employs a new method which does not rely on any shape assumptions.
+This is done by populating a matrix with the bin contents of a two-dimensional histogram where each of the two dimensions is a measured quantity providing independent information about the species of a given particle. 
+This matrix is then expressed as the product of two matrices where the rows of one and the columns of the other give the easurement distributions for the various constituent particle species.
+By applying the physical constraint that these distributions are positive semi-definite we are able to apply an iterative update rule to the measurement distribution matrices which converge such that the Kullback-Leibler divergence is minimized.
+This method provides the measurement distributions and yield for each particle species based on only physically motivated assumptions. 
+This method compares favorably to the traditional fitting method and under many circumstances this method gives more accurate measurements.
+
+
+Further details can be found in a [presentation](https://indico.cern.ch/event/275088/contribution/98) on the topic that was given at the Winter Workshop for Nuclear Dynamics 2014.
