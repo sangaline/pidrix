@@ -21,10 +21,10 @@ Further details can be found in a [presentation](https://indico.cern.ch/event/27
 
 Here are several examples of the library in action. The lower right histogram in each case is an example of what can be measured by an experiment. The three histograms to the left of it are what we would like to unfold from the histogram to the right. These are the distributions that we obtain for each particle type if we could perfectly differentiate between them. The three histograms above them show the distributions that pidrix produces when given only the histogram on the lower right as an input.
 
-<img src="http://sangaline.com/github/pidrix/animation1.gif"/>
+![Example 1](img/example-1.gif)
 
 In this animation, you can see the extracted yields and distributions evolve over subsequent iterations. The extracted particle distributions and yields match almost perfectly in this simple case (note that the z-axis is on a log scale so the ghosting effects are at much less than the 1% level).
 
-<img src="http://sangaline.com/github/pidrix/animation3.gif"/>
+![Example 2](img/example-2.gif)
 
 This example includes sinusoidal structure that makes determining the individual distributions far more difficult. The method is still able to determine the individual particle distributions without having any prior information about these distributions.
