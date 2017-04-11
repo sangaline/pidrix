@@ -17,7 +17,7 @@ This method compares favorably to the traditional fitting method and under many 
 
 Further details can be found in a [presentation](https://indico.cern.ch/event/275088/contribution/98) on the topic that was given at the Winter Workshop for Nuclear Dynamics 2014.
 
-#examples
+## Examples
 
 Here are several examples of the library in action. The lower right histogram in each case is an example of what can be measured by an experiment. The three histograms to the left of it are what we would like to unfold from the histogram to the right. These are the distributions that we obtain for each particle type if we could perfectly differentiate between them. The three histograms above them show the distributions that pidrix produces when given only the histogram on the lower right as an input.
 
